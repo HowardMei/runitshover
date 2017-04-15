@@ -13,12 +13,15 @@ sv -w196 force-stop /etc/service/*
 sv exit /etc/service/*
 
 echo "Running post-service clearing scripts in /etc/postclr.d"
+
 for _script in /etc/postclr.d/*; do
     if [ -x ${_script} ]; then
         echo >&2 "*** Running: ${_script}"
         ${_script}
+    else
+		echo >&2 "*** Failed to run: ${_script}. Please chmod +x ${_script}"
     fi
 done
-
+\rm -f /etc/envvars /etc/runit/stopall
 echo 'Shutting down the container ... ...'
 test -x /etc/init.d/rc && /etc/init.d/rc ${LAST}
